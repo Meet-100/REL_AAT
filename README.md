@@ -1,6 +1,8 @@
 # Adaptive Water Distribution Optimization using Reinforcement Learning
 
-## Project Overview
+> **A Reinforcement Learning-powered smart water distribution system designed to optimize resource allocation and minimize wastage, contributing to SDG 6.**
+
+## 📋 Project Overview
 This project implements a **Reinforcement Learning (RL)** based smart water distribution system. It optimizes the allocation of limited water resources across three zones (Zone A, Zone B, Zone C) from a central tank, aiming to minimize water shortage and wastage.
 
 ### SDG Connection: SDG 6 – Clean Water and Sanitation

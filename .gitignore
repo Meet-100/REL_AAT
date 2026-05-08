@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# Environment
+.env
+
+# Data and Models (Optional to ignore, but good practice for large ones)
+# models/*.pkl 
+# results/training_logs.csv
+
+# IDEs
+.vscode/
+.idea/

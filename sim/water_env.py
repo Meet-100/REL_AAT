@@ -6,10 +6,13 @@ class WaterDistributionEnv:
     Zones: Zone A, Zone B, Zone C
     Goal: Allocate water from a central tank to meet zone demands while minimizing shortage and wastage.
     """
-    def __init__(self, tank_capacity=100, refill_amount=30, demand_range=(5, 25)):
+    def __init__(self, tank_capacity=100, refill_amount=30, demand_range=(5, 25), seed=None):
         self.tank_capacity = tank_capacity
         self.refill_amount = refill_amount
         self.demand_range = demand_range
+        
+        # Local Random Number Generator
+        self.rng = np.random.default_rng(seed)
         
         # Initial State
         self.reset()
@@ -23,7 +26,7 @@ class WaterDistributionEnv:
 
     def generate_demands(self):
         """Randomly generate water demand for 3 zones."""
-        return np.random.randint(self.demand_range[0], self.demand_range[1] + 1, size=3)
+        return self.rng.integers(self.demand_range[0], self.demand_range[1] + 1, size=3)
 
     def get_state(self):
         """Return the current state (discretized for Q-learning)."""

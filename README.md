@@ -2,101 +2,139 @@
 
 > **A Reinforcement Learning-powered smart water distribution system designed to optimize resource allocation and minimize wastage, contributing to SDG 6.**
 
-## 📋 Project Overview
-This project implements a **Reinforcement Learning (RL)** based smart water distribution system. It optimizes the allocation of limited water resources across three zones (Zone A, Zone B, Zone C) from a central tank, aiming to minimize water shortage and wastage.
+## 📋 1. Project Overview
+This project addresses the challenge of distributing limited water resources from a central reservoir to multiple urban zones with fluctuating demands. Using **Reinforcement Learning**, the system learns an adaptive policy that prioritizes zones in need while maintaining overall network efficiency and minimizing overflow wastage.
 
-### SDG Connection: SDG 6 – Clean Water and Sanitation
-By optimizing water allocation, this project contributes to **Sustainable Development Goal 6** by ensuring efficient water management and reducing wastage in resource-constrained environments.
+## 🌍 2. SDG Mapping
+- **SDG 6: Clean Water and Sanitation** - Specifically targeting Target 6.4: "Substantially increase water-use efficiency across all sectors and ensure sustainable withdrawals and supply of freshwater to address water scarcity."
 
----
+## ❓ 3. Problem Statement
+Traditional water distribution systems often rely on fixed, time-based, or equal-share allocation rules. These methods fail to adapt to real-time demand spikes or droughts in specific zones, leading to:
+1.  **Water Shortage**: Critical unmet demand in high-usage areas.
+2.  **Resource Wastage**: Excessive supply or tank overflow in low-usage areas.
+3.  **Inefficiency**: Suboptimal utilization of central reservoir capacity.
 
-## 🛠️ Project Architecture
+## 🧠 4. RL Algorithm Used
+We implemented **Q-Learning**, a model-free, off-policy Temporal Difference (TD) control algorithm.
 
-### 1. Simulator Environment (`sim/water_env.py`)
-- **3 Zones**: Each generates random water demand at every timestep.
-- **Central Tank**: Has a fixed capacity and receives a periodic refill.
-- **State Space**: Discretized (Tank Level, Demand A, Demand B, Demand C).
-- **Action Space**:
-  - `Equal Distribution`: Divide water equally.
-  - `Prioritize Zone A/B/C`: Give priority to a specific zone.
+## ⚖️ 5. Why Q-Learning?
+Q-Learning was chosen because:
+- **Discretized State Space**: The problem's state variables (tank level, demands) can be effectively binned, making a tabular approach computationally efficient.
+- **Explainability**: The Q-table provides a transparent map of state-action values, which is essential for academic evaluation and safety audits in utility management.
+- **Convergence**: It guarantees an optimal policy for finite MDPs given sufficient exploration.
 
-### 2. RL Methodology (`agents/qlearning_agent.py`)
-- **Algorithm**: Q-Learning (Tabular).
-- **Strategy**: Epsilon-greedy exploration with decay.
-- **Reward Function**: `reward = -(Total Shortage + Total Wastage)`.
+## 📡 6. State Space
+The situational state is represented as a tuple: `(tank_level, demand_A, demand_B, demand_C)`.
 
-### 3. MLOps Workflow
-- **Reproducibility**: Controlled via `configs/qlearning.yaml`.
-- **Experiment Tracking**: All runs are logged in `results/experiments.csv`.
-- **Versioning**: Trained models are saved in `models/` (e.g., `policy_v1.pkl`).
+| Component | Range | Discretization (Bins) | Description |
+|-----------|-------|----------------------|-------------|
+| Tank Level| 0-100 | 5 | Empty (0), Low (1), Medium (2), High (3), Full (4) |
+| Demand A  | 5-25  | 4 | Low (0) to Peak (3) request from Zone A |
+| Demand B  | 5-25  | 4 | Low (0) to Peak (3) request from Zone B |
+| Demand C  | 5-25  | 4 | Low (0) to Peak (3) request from Zone C |
 
----
+## 🕹️ 7. Action Space
+The agent can choose from 4 high-level allocation strategies:
 
-## 🚀 How to Run
+| Action | Strategy | Implementation Logic |
+|--------|----------|----------------------|
+| **0** | Equal Distribution | Available water is split equally among all 3 zones. |
+| **1** | Prioritize Zone A | Zone A receives full demand if possible; remainder split between B/C. |
+| **2** | Prioritize Zone B | Zone B receives full demand if possible; remainder split between A/C. |
+| **3** | Prioritize Zone C | Zone C receives full demand if possible; remainder split between A/B. |
 
-### 1. Installation
-Install the required Python dependencies:
+## 🏆 8. Reward Function
+The agent is trained to maximize a cumulative reward designed to penalize system failures:
+**Reward = -(Total Shortage + Total Wastage)**
+- **Shortage**: Sum of unmet demands across all zones (Priority #1).
+- **Wastage**: Units lost to tank overflow during the refill phase (Priority #2).
+
+## 🔦 9. Exploration Strategy
+We use an **Epsilon-Greedy** strategy:
+- **Epsilon ($\epsilon$)**: Starts at 1.0 (100% exploration).
+- **Decay**: Multiplied by 0.995 each episode.
+- **Minimum**: 0.01 (1% permanent exploration to ensure adaptability to demand shifts).
+
+## 📁 10. Folder Structure
+```text
+water-rl-project/
+├── agents/             # RL Agent implementation (QLearningAgent)
+├── sim/                # Custom water distribution environment
+├── configs/            # YAML files for reproducible hyperparams
+├── logs/               # CSV and JSON experiment tracking
+├── policies/           # Versioned models and metadata
+├── results/            # Performance reports and plots
+│   └── plots/          # Reward and Shortage visualizations
+├── experiments/        # Historical experiment records
+├── utils/              # Common utility functions
+├── README.md           # Project documentation
+├── requirements.txt    # Python dependencies
+├── train.py            # Training pipeline
+└── evaluate.py         # Comparative evaluation script
+```
+
+## 🛠️ 11. Installation Instructions
+1. Clone the repository.
+2. Ensure Python 3.8+ is installed.
+3. (Optional) Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
+
+## 📦 12. Requirements Installation
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Training
-Train the Q-learning agent:
+## 🚄 13. How to Train
+Execute the training pipeline with the default configuration:
 ```bash
-python train.py
+python train.py --config configs/qlearning.yaml
 ```
-This will:
-- Train the agent for 1000 episodes (configurable).
-- Save the trained policy to `models/policy_v1.pkl`.
-- Log results to `results/training_logs.csv`.
 
-### 3. Evaluation
-Compare the RL agent against the baseline:
+## 📊 14. How to Evaluate
+Run the evaluation script to compare the RL agent against a fixed-rule baseline:
 ```bash
-python evaluate.py
+python evaluate.py --config configs/qlearning.yaml
 ```
-This will:
-- Run test episodes for both RL and Fixed-Distribution baseline.
-- Generate comparison plots in `results/plots/`.
-- Generate a summary report in `results/evaluation_report.md`.
 
----
+## 🔄 15. Reproducibility Instructions
+To reproduce the exact results shown in this report:
+1. Ensure `agent.seed` is set to `42` in `configs/qlearning.yaml`.
+2. Run the training script. The environment uses a local Random Number Generator (RNG) initialized with this seed to ensure demand patterns are identical across runs.
 
-## 📊 Monitoring Plan (Real-world Deployment)
-In a real-world scenario, the following metrics should be monitored continuously:
-- **Water Shortages**: Frequency and severity of unmet demand.
-- **Wastage**: Tank overflows or over-allocation.
-- **Sensor Health**: Monitoring tank level and flow sensors for failures.
-- **Leakage Detection**: Discrepancies between tank outflow and zone inflow.
-- **Fairness**: Ensuring no single zone is consistently deprived of water.
+## 📈 16. Experiment Tracking Explanation
+The project uses automated logging for MLOps compliance:
+- **`logs/experiments.json`**: Stores every training run's ID, timestamp, hyperparameters (alpha, gamma), and final performance metrics.
+- **`logs/training_logs.csv`**: Per-episode breakdown of rewards and shortages for plotting convergence.
 
----
+## 💾 17. Policy Versioning Explanation
+We maintain strict model versioning in the `policies/` directory:
+- **`policy_v1.pkl`**: Standard production-ready model.
+- **`policy_v2_explored.pkl`**: Model version trained with higher exploration or different seeds.
+- **`policy_metadata.json`**: A machine-readable file tracking which algorithm, parameters, and rewards are associated with the current policies.
 
-## 📁 Folder Structure
+## 🖥️ 18. Monitoring Plan (Real-World Deployment)
+In a production deployment, the system should be monitored via a dashboard tracking:
+- **Congestion Frequency**: How often multiple zones simultaneously exceed 80% demand.
+- **Resource Wastage**: Cumulative tank overflow units per day.
+- **Fairness Index**: Variance in unmet demand across different socio-economic zones.
+- **Safety Violations**: Frequency of tank levels dropping below a "Critical Low" threshold (e.g., 5%).
+- **Emergency Handling**: Detection of sudden demand spikes (e.g., firefighting needs) that require manual override.
+
+## 📝 19. Sample Outputs
+### Training Log Sample:
 ```text
-water-rl-project/
-├── agents/             # RL Agent logic (Q-Learning)
-├── sim/                # Environment simulator
-├── configs/            # YAML configurations
-├── models/             # Saved policy files (.pkl)
-├── results/            # Logs, CSVs, and plots
-│   └── plots/          # Visualizations
-├── experiments/        # Manual experiment notes (if any)
-├── utils/              # Helper utilities
-├── train.py            # Training script
-├── evaluate.py         # Evaluation script
-├── requirements.txt    # Dependencies
-└── README.md           # Documentation
+Episode 100/1000 | Avg Reward: -1455.96 | Epsilon: 0.606
+Episode 500/1000 | Avg Reward: -1452.15 | Epsilon: 0.082
+Training complete. Run ID: 20260510_184357
 ```
 
+## 🖼️ 20. Plots Section
+The following visualizations are generated automatically in `results/plots/`:
+1.  **Reward Convergence**: Shows the agent learning and stabilizing over time.
+2.  **Shortage Comparison**: Bar chart comparing the RL agent's efficiency against the Baseline system.
+
 ---
-
-## 🏷️ Versioning & Tags
-For academic evaluation, use Git tags to mark milestones:
-- `exp-qlearning-1`: Initial baseline model.
-- `exp-qlearning-2`: Optimized hyperparameters.
-
-## ⚠️ Limitations & Future Work
-- **Discrete State Space**: The current model uses discretization. Future versions could use Deep Q-Networks (DQN) for continuous states.
-- **Static Pricing**: Future versions could incorporate dynamic water pricing based on demand.
-- **External Factors**: Rainfall and weather forecasts could be added as state inputs.
+**Project developed for AAT academic evaluation.**

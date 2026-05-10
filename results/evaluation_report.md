@@ -6,8 +6,8 @@ This report compares the Reinforcement Learning (Q-Learning) agent against a fix
 ## Performance Metrics
 | mode     |   ('shortage', 'mean') |   ('shortage', 'std') |   ('wastage', 'mean') |   ('wastage', 'std') |   ('avg_utilization', 'mean') |
 |:---------|-----------------------:|----------------------:|----------------------:|---------------------:|------------------------------:|
-| Baseline |                1444.72 |                104.66 |                  0.48 |                 1.45 |                          0.34 |
-| RL       |                1447.51 |                 96.6  |                  0.5  |                 2.25 |                          0.36 |
+| Baseline |                1456.87 |                 84.67 |                  0.6  |                 2.27 |                          0.34 |
+| RL       |                1458.25 |                107.42 |                  0.12 |                 0.48 |                          0.36 |
 
 ## Conclusion
 The RL Agent is still converging. Consider increasing training episodes or tuning hyperparameters.

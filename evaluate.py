@@ -4,6 +4,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import argparse
 from sim.water_env import WaterDistributionEnv
 from agents.qlearning_agent import QLearningAgent
 
@@ -36,9 +37,9 @@ def run_evaluation(env, agent, episodes, max_steps, mode="RL"):
         })
     return pd.DataFrame(results)
 
-def evaluate():
+def evaluate(config_path):
     # 1. Load Config
-    with open("configs/qlearning.yaml", "r") as f:
+    with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
     env = WaterDistributionEnv(
@@ -49,17 +50,19 @@ def evaluate():
 
     # 2. Load RL Agent
     agent = QLearningAgent(n_actions=4)
-    if os.path.exists(config['training']['save_path']):
-        agent.load(config['training']['save_path'])
-        print(f"Loaded agent from {config['training']['save_path']}")
+    # Support loading from the versioned policies folder
+    policy_path = config['training']['save_path']
+    if os.path.exists(policy_path):
+        agent.load(policy_path)
+        print(f"Loaded agent from {policy_path}")
     else:
-        print("Warning: Trained model not found. Running with untrained agent.")
+        print(f"Warning: Trained model not found at {policy_path}. Running with untrained agent.")
 
     test_episodes = config['evaluation']['test_episodes']
     max_steps = config['environment']['max_steps']
 
     # 3. Run Evaluations
-    print("Evaluating RL Agent...")
+    print(f"Evaluating RL Agent using config: {config_path}...")
     rl_results = run_evaluation(env, agent, test_episodes, max_steps, mode="RL")
     
     print("Evaluating Baseline (Equal Distribution)...")
@@ -123,4 +126,8 @@ def evaluate():
     print(f"Report generated at {report_path}")
 
 if __name__ == "__main__":
-    evaluate()
+    parser = argparse.ArgumentParser(description="Evaluate Water Distribution RL Agent")
+    parser.add_argument("--config", type=str, default="configs/qlearning.yaml", help="Path to YAML config")
+    args = parser.parse_args()
+    
+    evaluate(args.config)

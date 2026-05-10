@@ -1,0 +1,26 @@
+[
+    {
+        "run_id": "20260510_184357",
+        "timestamp": "2026-05-10T18:43:57.835456",
+        "episodes": 1000,
+        "alpha": 0.1,
+        "gamma": 0.95,
+        "epsilon": 1.0,
+        "epsilon_decay": 0.995,
+        "avg_reward": -1444.61304952981,
+        "avg_shortage": 1444.10304952981,
+        "avg_wastage": 0.51
+    },
+    {
+        "run_id": "20260510_185200",
+        "timestamp": "2026-05-10T18:52:00.994354",
+        "episodes": 1000,
+        "alpha": 0.1,
+        "gamma": 0.95,
+        "epsilon": 1.0,
+        "epsilon_decay": 0.995,
+        "avg_reward": -1433.5070211436437,
+        "avg_shortage": 1432.9970211436437,
+        "avg_wastage": 0.51
+    }
+]

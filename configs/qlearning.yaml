@@ -1,5 +1,6 @@
 # Reinforcement Learning Configuration
 agent:
+  seed: 42
   learning_rate: 0.1
   gamma: 0.95
   epsilon: 1.0
@@ -14,8 +15,8 @@ environment:
 
 training:
   episodes: 1000
-  save_path: "models/policy_v1.pkl"
-  log_path: "results/training_logs.csv"
+  save_path: "policies/policy_v1.pkl"
+  log_path: "logs/training_logs.csv"
 
 evaluation:
   test_episodes: 50

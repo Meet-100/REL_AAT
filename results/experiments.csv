@@ -1,2 +1,0 @@
-run_id,timestamp,episodes,lr,epsilon,gamma,avg_reward,total_shortage,total_wastage
-20260508_195647,2026-05-08T19:56:47.443633,1000,0.1,1.0,0.95,-1447.1207554027797,1440469.2701566825,371.0

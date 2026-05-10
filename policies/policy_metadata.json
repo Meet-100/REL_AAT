@@ -1,0 +1,27 @@
+{
+    "algorithm": "Q-Learning",
+    "run_timestamp": "2026-05-10T18:52:00.979720",
+    "episodes_trained": 1000,
+    "hyperparameters": {
+        "seed": 42,
+        "learning_rate": 0.1,
+        "gamma": 0.95,
+        "epsilon": 1.0,
+        "epsilon_decay": 0.995,
+        "epsilon_min": 0.01
+    },
+    "environment_settings": {
+        "max_steps": 100,
+        "tank_capacity": 100,
+        "refill_amount": 30,
+        "demand_range": [
+            5,
+            25
+        ]
+    },
+    "results": {
+        "final_avg_reward": -1433.5070211436437,
+        "final_avg_shortage": 1432.9970211436437,
+        "final_avg_wastage": 0.51
+    }
+}
